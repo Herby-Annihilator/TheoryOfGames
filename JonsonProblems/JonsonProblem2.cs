@@ -12,10 +12,35 @@ namespace TheoryOfGames.JonsonProblems
 		public override Answer GetAnswer()
 		{
 			Answer answer = new Answer();
-			answer.OptimalSequence = GetOptimalSequence();
+			int[] optimalSequence = GetOptimalSequence();
+			int detail = optimalSequence[0];
+			double[] detailsWaitTime = new double[optimalSequence[0]];
+			double[] bDowntimes = new double[optimalSequence[0]];
+			double totalTimeA = processingTimes[detail][0], totalTimeB = 0,
+				downtimeBeforeProcessing = totalTimeA, totalDowntime = downtimeBeforeProcessing;
+			for (int i = 1; i < optimalSequence.Length; i++)
+			{
+				detail = optimalSequence[i];
+				totalTimeA += processingTimes[detail][0];
+				totalTimeB += processingTimes[detail][1];
+				downtimeBeforeProcessing = totalTimeA - totalTimeB - totalDowntime;
+				if (downtimeBeforeProcessing < 0)  // станок В не успевает
+				{
+					detailsWaitTime[detail] = downtimeBeforeProcessing * (-1);  // если деталь ожидает
+					bDowntimes[detail] = 0;    // станок В, то станок В не простаивает на этой детали
+					downtimeBeforeProcessing = 0;
+				}
+				else   // значит, станок В либо тут же обрабатывает, либо простаивает
+				{
+					bDowntimes[detail] = downtimeBeforeProcessing;
+					detailsWaitTime[detail] = 0;
+				}
+				totalDowntime += downtimeBeforeProcessing;
+			}
+			FillAnswer(answer, optimalSequence, bDowntimes, detailsWaitTime, totalTimeB);
 			return answer;
 		}
-		protected int[] GetOptimalSequence()
+		protected virtual int[] GetOptimalSequence()
 		{
 			visited = new bool[processingTimes.GetLength(0)];
 			int[] optimalSequence = new int[processingTimes.GetLength(0)];
@@ -73,6 +98,15 @@ namespace TheoryOfGames.JonsonProblems
 				}
 			}
 			return detail;
+		}		
+		protected virtual void FillAnswer(Answer answer, int[] sequence, double[] bDowntimes, double[] detailsWaitTime, double totalB)
+		{
+			answer.BDowntimeForEachDetail = (double[])bDowntimes.Clone();
+			answer.TotalBDowntimeForEachDetail = answer.BDowntimeForEachDetail.Sum();
+			answer.WaitingTimeForDetailsBeforeProcessingOnB = (double[])detailsWaitTime.Clone();
+			answer.TotalWaitingTimeForDetailsBeforeProcessingOnB = 
+				answer.WaitingTimeForDetailsBeforeProcessingOnB.Sum();
+			answer.TotalTimeOfAllProductProcess = totalB + answer.TotalBDowntimeForEachDetail;
 		}
 		internal JonsonProblem2(double[][] matrix) : base(matrix)
 		{

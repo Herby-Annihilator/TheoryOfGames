@@ -9,5 +9,10 @@ namespace TheoryOfGames.JonsonProblems
 	public class Answer
 	{
 		public int[] OptimalSequence { get; internal set; }
+		public double[] WaitingTimeForDetailsBeforeProcessingOnB { get; internal set; }
+		public double TotalWaitingTimeForDetailsBeforeProcessingOnB { get; internal set; }
+		public double[] BDowntimeForEachDetail { get; internal set; }
+		public double TotalBDowntimeForEachDetail { get; internal set; }
+		public double TotalTimeOfAllProductProcess { get; internal set; }
 	}
 }
