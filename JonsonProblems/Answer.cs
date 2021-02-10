@@ -8,6 +8,6 @@ namespace TheoryOfGames.JonsonProblems
 {
 	public class Answer
 	{
-
+		public int[] OptimalSequence { get; internal set; }
 	}
 }

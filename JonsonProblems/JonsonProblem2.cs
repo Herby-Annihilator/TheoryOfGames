@@ -11,7 +11,9 @@ namespace TheoryOfGames.JonsonProblems
 		bool[] visited;
 		public override Answer GetAnswer()
 		{
-			
+			Answer answer = new Answer();
+			answer.OptimalSequence = GetOptimalSequence();
+			return answer;
 		}
 		protected int[] GetOptimalSequence()
 		{
@@ -23,17 +25,20 @@ namespace TheoryOfGames.JonsonProblems
 			for (int i = 0; i < processingTimes.GetLength(0); i++)
 			{
 				detail = FindDetailWithMinProcessTime();
-				visited[detail] = true;
-				if (processingTimes[detail][0] < processingTimes[detail][1])
+				if (detail > -1)
 				{
-					optimalSequence[head] = detail;
-					head++;
-				}
-				else
-				{
-					optimalSequence[tail] = detail;
-					tail--;
-				}
+					visited[detail] = true;
+					if (processingTimes[detail][0] < processingTimes[detail][1])
+					{
+						optimalSequence[head] = detail;
+						head++;
+					}
+					else
+					{
+						optimalSequence[tail] = detail;
+						tail--;
+					}
+				}				
 			}
 			return optimalSequence;
 		}
