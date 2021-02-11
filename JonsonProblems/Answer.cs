@@ -14,5 +14,7 @@ namespace TheoryOfGames.JonsonProblems
 		public double[] BDowntimeForEachDetail { get; internal set; }
 		public double TotalBDowntimeForEachDetail { get; internal set; }
 		public double TotalTimeOfAllProductProcess { get; internal set; }
+		public double[] CDowntimeForEachDetail { get; internal set; }
+		public double TotalCDowntimeForEachDetail { get; internal set; }
 	}
 }
