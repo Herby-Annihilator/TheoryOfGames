@@ -13,29 +13,29 @@ namespace TheoryOfGames.JonsonProblems
 		{
 			Answer answer = new Answer();
 			int[] optimalSequence = GetOptimalSequence();
-			int detail = optimalSequence[0];
-			double[] detailsWaitTime = new double[optimalSequence[0]];
-			double[] bDowntimes = new double[optimalSequence[0]];
-			double totalTimeA = processingTimes[detail][0], totalTimeB = 0,
-				downtimeBeforeProcessing = totalTimeA, totalDowntime = downtimeBeforeProcessing;
-			for (int i = 1; i < optimalSequence.Length; i++)
+			int detail;
+			double[] detailsWaitTime = new double[optimalSequence.Length];
+			double[] bDowntimes = new double[optimalSequence.Length];
+			double totalTimeA = 0;
+			double totalTimeB = 0;
+			double totalDowntime = 0;
+			double currentDownTime;
+			for (int i = 0; i < optimalSequence.Length; i++)
 			{
 				detail = optimalSequence[i];
 				totalTimeA += processingTimes[detail][0];
+				currentDownTime = totalTimeA - totalTimeB - totalDowntime;
+				if (currentDownTime < 0)
+				{
+					detailsWaitTime[detail] = currentDownTime * (-1);
+					currentDownTime = 0;
+				}
+				else
+				{
+					bDowntimes[detail] = currentDownTime;
+				}
+				totalDowntime += currentDownTime;
 				totalTimeB += processingTimes[detail][1];
-				downtimeBeforeProcessing = totalTimeA - totalTimeB - totalDowntime;
-				if (downtimeBeforeProcessing < 0)  // станок В не успевает
-				{
-					detailsWaitTime[detail] = downtimeBeforeProcessing * (-1);  // если деталь ожидает
-					bDowntimes[detail] = 0;    // станок В, то станок В не простаивает на этой детали
-					downtimeBeforeProcessing = 0;
-				}
-				else   // значит, станок В либо тут же обрабатывает, либо простаивает
-				{
-					bDowntimes[detail] = downtimeBeforeProcessing;
-					detailsWaitTime[detail] = 0;
-				}
-				totalDowntime += downtimeBeforeProcessing;
 			}
 			FillAnswer(answer, optimalSequence, bDowntimes, detailsWaitTime, totalTimeB);
 			return answer;
@@ -53,7 +53,7 @@ namespace TheoryOfGames.JonsonProblems
 				if (detail > -1)
 				{
 					visited[detail] = true;
-					if (processingTimes[detail][0] < processingTimes[detail][1])
+					if (processingTimes[detail][0] <= processingTimes[detail][1])
 					{
 						optimalSequence[head] = detail;
 						head++;
@@ -101,6 +101,7 @@ namespace TheoryOfGames.JonsonProblems
 		}		
 		protected virtual void FillAnswer(Answer answer, int[] sequence, double[] bDowntimes, double[] detailsWaitTime, double totalB)
 		{
+			answer.OptimalSequence = sequence;
 			answer.BDowntimeForEachDetail = (double[])bDowntimes.Clone();
 			answer.TotalBDowntimeForEachDetail = answer.BDowntimeForEachDetail.Sum();
 			answer.WaitingTimeForDetailsBeforeProcessingOnB = (double[])detailsWaitTime.Clone();

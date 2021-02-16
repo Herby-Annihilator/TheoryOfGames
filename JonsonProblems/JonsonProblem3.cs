@@ -67,17 +67,28 @@ namespace TheoryOfGames.JonsonProblems
 		private void PrepareProcessingMatrix()
 		{
 			double[] sums;
-			if (FindMinInsideCol(0) >= FindMaxInsideCol(1) || FindMinInsideCol(2) >= FindMaxInsideCol(1))
-			{
+			//if (FindMinInsideCol(0) >= FindMaxInsideCol(1) || FindMinInsideCol(2) >= FindMaxInsideCol(1))
+			//if (CanSolveProblem())
+			//{
 				sums = GetColsSum(0, 1);
 				CloneVectorIntoCol(sums, 0);
 				sums = GetColsSum(1, 2);
 				CloneVectorIntoCol(sums, 1);
-			}
-			else
+			//}
+			//else
+			//{
+			//	throw new Exception("Решение не может быть найдено");
+			//}
+		}
+		private bool CanSolveProblem()
+		{
+			for (int i = 0; i < processingTimes.GetLength(0); i++)
 			{
-				throw new Exception("Решение не может быть найдено");
+				if (!(Math.Min(processingTimes[i][0], processingTimes[i][2]) <= processingTimes[i][1] &&
+					processingTimes[i][1] <= Math.Max(processingTimes[i][0], processingTimes[i][1])))
+					return false;
 			}
+			return true;
 		}
 		private double FindMinInsideCol(int col)
 		{
